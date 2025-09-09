@@ -2,195 +2,221 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Data Input Keren</title>
+  <title>Data Manager Premium</title>
   <style>
-    /* Background animasi gradasi bergerak */
+    * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif;}
     body {
-      margin: 0;
-      font-family: "Poppins", sans-serif;
-      background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #a18cd1, #fbc2eb);
-      background-size: 400% 400%;
-      animation: gradientBG 12s ease infinite;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      min-height:100vh; display:flex; flex-direction:column;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color:#fff; transition:0.3s;
     }
 
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    /* Navbar */
+    nav {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(15px);
+      padding:15px 25px; display:flex; justify-content:space-between; align-items:center;
+      box-shadow:0 5px 20px rgba(0,0,0,0.2);
     }
+    nav h2 { font-size:22px; letter-spacing:1px; }
+    nav button { 
+      background:transparent; border:none; color:#fff; cursor:pointer;
+      font-size:18px; transition:0.3s;
+    }
+    nav button:hover { transform:scale(1.2); }
 
-    /* Card */
+    /* Container utama */
     .container {
-      background: white;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-      width: 400px;
-      text-align: center;
+      width:95%; max-width:1100px; margin:25px auto; padding:20px;
     }
 
-    h2 {
-      margin-bottom: 20px;
-      color: #333;
+    /* Cards statistik */
+    .cards {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:15px; margin-bottom:20px;
     }
-
-    input {
-      width: 90%;
-      padding: 10px;
-      margin: 8px 0;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      outline: none;
-      transition: 0.3s;
+    .card {
+      background:rgba(255,255,255,0.15); padding:20px; border-radius:15px;
+      text-align:center; backdrop-filter: blur(10px);
+      box-shadow:0 6px 20px rgba(0,0,0,0.25);
+      transition:0.3s;
     }
+    .card:hover { transform:translateY(-5px) scale(1.02); }
 
-    input:focus {
-      border-color: #7f00ff;
-      box-shadow: 0 0 8px #7f00ff44;
+    /* Tombol */
+    .btn {
+      padding:8px 14px; border:none; border-radius:8px; cursor:pointer;
+      font-size:13px; margin:2px; transition:0.3s; font-weight:600;
     }
+    .btn-add { background:#28a745; color:#fff; }
+    .btn-edit { background:#ffc107; color:#222; }
+    .btn-delete { background:#dc3545; color:#fff; }
+    .btn-cancel { background:#6c757d; color:#fff; }
 
-    button {
-      padding: 8px 15px;
-      margin: 5px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.3s;
-      color: white;
+    .btn:hover { transform:scale(1.05); box-shadow:0 4px 12px rgba(0,0,0,0.3); }
+
+    /* Tabel */
+    table { width:100%; border-collapse:collapse; margin-top:15px; }
+    table thead { background:rgba(255,255,255,0.2); cursor:pointer; }
+    table th, table td { padding:12px; text-align:center; }
+    table tr { transition:0.25s; }
+    table tr:hover { background:rgba(255,255,255,0.1); transform:scale(1.005); }
+
+    /* Modal */
+    .modal {
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center;
     }
-
-    .btn-simpan { background: #28a745; }
-    .btn-edit   { background: #007bff; }
-    .btn-hapus  { background: #dc3545; }
-    .btn-batal  { background: #6c757d; }
-
-    button:hover { opacity: 0.85; }
-
-    ul {
-      list-style: none;
-      padding: 0;
+    .modal-content {
+      background:rgba(255,255,255,0.9); color:#333; padding:25px; border-radius:15px;
+      width:90%; max-width:420px; animation:slideDown 0.5s ease;
     }
-
-    li {
-      background: #f8f9fa;
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .modal-content h2 { margin-bottom:10px; text-align:center; }
+    .modal-content input {
+      width:100%; padding:12px; margin:8px 0;
+      border:1px solid #ccc; border-radius:8px; outline:none;
     }
+    .modal-actions { display:flex; justify-content:space-between; margin-top:15px; }
 
-    .actions button {
-      margin-left: 5px;
-    }
+    /* Dark mode */
+    body.dark { background:linear-gradient(135deg,#232526,#414345); color:#eee; }
+    body.dark nav { background:rgba(0,0,0,0.4); }
+    body.dark .card { background:rgba(255,255,255,0.05); }
+    body.dark table thead { background:rgba(0,0,0,0.5); }
+    body.dark .modal-content { background:#2c2c2c; color:#eee; }
 
-    /* Halaman edit */
-    #editPage {
-      display: none;
-    }
+    /* Animasi */
+    @keyframes slideDown { from{transform:translateY(-50px); opacity:0;} to{transform:translateY(0); opacity:1;} }
   </style>
 </head>
 <body>
-  <div class="container" id="mainPage">
-    <h2>Input Data</h2>
-    <input type="text" id="nama" placeholder="Nama">
-    <input type="text" id="asal" placeholder="Asal">
-    <input type="number" id="umur" placeholder="Umur">
-    <br>
-    <button class="btn-simpan" onclick="simpanData()">Simpan</button>
+  <!-- Navbar -->
+  <nav>
+    <h2>⚡ Data Manager Premium</h2>
+    <button onclick="toggleMode()">🌙</button>
+  </nav>
 
-    <h3>Daftar Data</h3>
-    <ul id="dataList"></ul>
+  <div class="container">
+    <!-- Cards statistik -->
+    <div class="cards">
+      <div class="card" id="cardTotal">Total Data: 0</div>
+      <div class="card" id="cardUmur">Rata-rata Umur: 0</div>
+    </div>
+
+    <!-- Tombol tambah -->
+    <button class="btn btn-add" onclick="openModal()">+ Tambah Data</button>
+
+    <!-- Tabel data -->
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th onclick="sortTable(0)">Nama ⬍</th>
+          <th onclick="sortTable(1)">Asal ⬍</th>
+          <th onclick="sortTable(2)">Umur ⬍</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
 
-  <!-- Halaman Edit -->
-  <div class="container" id="editPage">
-    <h2>Edit Data</h2>
-    <input type="text" id="editNama" placeholder="Nama">
-    <input type="text" id="editAsal" placeholder="Asal">
-    <input type="number" id="editUmur" placeholder="Umur">
-    <br>
-    <button class="btn-simpan" onclick="updateData()">Simpan Perubahan</button>
-    <button class="btn-batal" onclick="batalEdit()">Batal</button>
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h2 id="modalTitle">Tambah Data</h2>
+      <input type="text" id="nama" placeholder="Nama">
+      <input type="text" id="asal" placeholder="Asal">
+      <input type="number" id="umur" placeholder="Umur">
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeModal()">Batal</button>
+        <button class="btn btn-add" onclick="saveData()">Simpan</button>
+      </div>
+    </div>
   </div>
 
   <script>
-    let data = [];
-    let editIndex = null;
+    let editIndex=null;
 
-    function simpanData() {
-      const nama = document.getElementById("nama").value.trim();
-      const asal = document.getElementById("asal").value.trim();
-      const umur = document.getElementById("umur").value.trim();
+    function toggleMode(){ document.body.classList.toggle("dark"); }
 
-      if (nama && asal && umur) {
-        data.push({ nama, asal, umur });
-        tampilkanData();
-        document.getElementById("nama").value = "";
-        document.getElementById("asal").value = "";
-        document.getElementById("umur").value = "";
+    function openModal(index=null){
+      document.getElementById("modal").style.display="flex";
+      if(index!==null){
+        editIndex=index;
+        const row=document.querySelectorAll("#dataTable tbody tr")[index].children;
+        document.getElementById("nama").value=row[0].textContent;
+        document.getElementById("asal").value=row[1].textContent;
+        document.getElementById("umur").value=row[2].textContent;
+        document.getElementById("modalTitle").textContent="Edit Data";
       } else {
-        alert("Isi semua input dulu ya!");
+        editIndex=null;
+        document.getElementById("nama").value="";
+        document.getElementById("asal").value="";
+        document.getElementById("umur").value="";
+        document.getElementById("modalTitle").textContent="Tambah Data";
       }
     }
 
-    function tampilkanData() {
-      const list = document.getElementById("dataList");
-      list.innerHTML = "";
-      data.forEach((item, index) => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-          <span><b>${item.nama}</b> | ${item.asal} | ${item.umur} th</span>
-          <div class="actions">
-            <button class="btn-edit" onclick="editData(${index})">Edit</button>
-            <button class="btn-hapus" onclick="hapusData(${index})">Hapus</button>
-          </div>
+    function closeModal(){ document.getElementById("modal").style.display="none"; }
+
+    function saveData(){
+      const nama=document.getElementById("nama").value.trim();
+      const asal=document.getElementById("asal").value.trim();
+      const umur=document.getElementById("umur").value.trim();
+
+      if(!nama||!asal||!umur){alert("Isi semua data!"); return;}
+      const tbody=document.querySelector("#dataTable tbody");
+
+      if(editIndex!==null){
+        const row=tbody.children[editIndex].children;
+        row[0].textContent=nama;
+        row[1].textContent=asal;
+        row[2].textContent=umur;
+      } else {
+        const tr=document.createElement("tr");
+        tr.innerHTML=`
+          <td>${nama}</td>
+          <td>${asal}</td>
+          <td>${umur}</td>
+          <td>
+            <button class="btn btn-edit" onclick="openModal(${tbody.children.length})">Edit</button>
+            <button class="btn btn-delete" onclick="deleteData(this)">Hapus</button>
+          </td>
         `;
-        list.appendChild(li);
-      });
+        tbody.appendChild(tr);
+      }
+      updateCards();
+      closeModal();
     }
 
-    function hapusData(index) {
-      data.splice(index, 1);
-      tampilkanData();
+    function deleteData(btn){
+      btn.parentElement.parentElement.remove();
+      updateCards();
     }
 
-    function editData(index) {
-      editIndex = index;
-      document.getElementById("editNama").value = data[index].nama;
-      document.getElementById("editAsal").value = data[index].asal;
-      document.getElementById("editUmur").value = data[index].umur;
+    function updateCards(){
+      const rows=document.querySelectorAll("#dataTable tbody tr");
+      document.getElementById("cardTotal").textContent="Total Data: "+rows.length;
 
-      document.getElementById("mainPage").style.display = "none";
-      document.getElementById("editPage").style.display = "block";
-    }
-
-    function updateData() {
-      const nama = document.getElementById("editNama").value.trim();
-      const asal = document.getElementById("editAsal").value.trim();
-      const umur = document.getElementById("editUmur").value.trim();
-
-      if (nama && asal && umur) {
-        data[editIndex] = { nama, asal, umur };
-        tampilkanData();
-        balikKeMain();
+      if(rows.length>0){
+        let totalUmur=0;
+        rows.forEach(r=> totalUmur+=parseInt(r.children[2].textContent));
+        document.getElementById("cardUmur").textContent="Rata-rata Umur: "+Math.round(totalUmur/rows.length);
       } else {
-        alert("Isi semua input dulu ya!");
+        document.getElementById("cardUmur").textContent="Rata-rata Umur: 0";
       }
     }
 
-    function batalEdit() {
-      balikKeMain(); // balik tanpa hapus data
-    }
-
-    function balikKeMain() {
-      document.getElementById("mainPage").style.display = "block";
-      document.getElementById("editPage").style.display = "none";
+    function sortTable(col){
+      const tbody=document.querySelector("#dataTable tbody");
+      const rows=Array.from(tbody.querySelectorAll("tr"));
+      const sorted=rows.sort((a,b)=>{
+        let valA=a.children[col].textContent.toLowerCase();
+        let valB=b.children[col].textContent.toLowerCase();
+        return col===2? parseInt(valA)-parseInt(valB) : valA.localeCompare(valB);
+      });
+      tbody.innerHTML="";
+      sorted.forEach(r=>tbody.appendChild(r));
     }
   </script>
 </body>
