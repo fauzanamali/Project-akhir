@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Data Manager</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb);
+      background-size: 400% 400%;
+      animation: bergerak 15s ease infinite;
+    }
+
+    @keyframes bergerak {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      width: 500px;
+      text-align: center;
+    }
+
+    input {
+      padding: 8px;
+      width: 28%;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin: 5px 5px;
+    }
+
+    button {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    #btnSimpan {
+      background: #4CAF50;
+      color: white;
+      margin-top: 10px;
+    }
+
+    #btnSimpan:hover {
+      background: #45a049;
+    }
+
+    .btnEdit {
+      background: #2196F3;
+      color: white;
+      margin-left: 5px;
+    }
+
+    .btnEdit:hover {
+      background: #1976D2;
+    }
+
+    .btnHapus {
+      background: #f44336;
+      color: white;
+      margin-left: 5px;
+    }
+
+    .btnHapus:hover {
+      background: #d32f2f;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    li {
+      background: #f1f1f1;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>📋 Manajemen Data</h2>
+    <input type="text" id="inputNama" placeholder="Nama">
+    <input type="text" id="inputAsal" placeholder="Asal">
+    <input type="number" id="inputUmur" placeholder="Umur">
+    <br>
+    <button id="btnSimpan" onclick="tambahData()">Simpan</button>
+    <ul id="daftar"></ul>
+  </div>
+
+  <script>
+    // 🔹 Ambil data dari localStorage saat pertama kali load
+    let dataList = JSON.parse(localStorage.getItem("dataList")) || [];
+
+    function renderList() {
+      const daftar = document.getElementById("daftar");
+      daftar.innerHTML = "";
+      dataList.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.textContent = `Nama: ${item.nama}, Asal: ${item.asal}, Umur: ${item.umur}`;
+
+        const btnContainer = document.createElement("span");
+
+        // Tombol Edit
+        const btnEdit = document.createElement("button");
+        btnEdit.textContent = "Edit";
+        btnEdit.className = "btnEdit";
+        btnEdit.onclick = function () {
+          localStorage.setItem("editIndex", index); // simpan index item
+          localStorage.setItem("editData", JSON.stringify(item));
+          window.location.href = "edit.html";
+        };
+
+        // Tombol Hapus
+        const btnHapus = document.createElement("button");
+        btnHapus.textContent = "Hapus";
+        btnHapus.className = "btnHapus";
+        btnHapus.onclick = function () {
+          dataList.splice(index, 1);
+          localStorage.setItem("dataList", JSON.stringify(dataList));
+          renderList();
+        };
+
+        btnContainer.appendChild(btnEdit);
+        btnContainer.appendChild(btnHapus);
+        li.appendChild(btnContainer);
+        daftar.appendChild(li);
+      });
+    }
+
+    function tambahData() {
+      const nama = document.getElementById("inputNama").value.trim();
+      const asal = document.getElementById("inputAsal").value.trim();
+      const umur = document.getElementById("inputUmur").value.trim();
+
+      if (!nama || !asal || !umur) {
+        alert("Semua input harus diisi!");
+        return;
+      }
+
+      dataList.push({ nama, asal, umur });
+      localStorage.setItem("dataList", JSON.stringify(dataList));
+      renderList();
+
+      document.getElementById("inputNama").value = "";
+      document.getElementById("inputAsal").value = "";
+      document.getElementById("inputUmur").value = "";
+    }
+
+    // Render list pertama kali
+    renderList();
+  </script>
+</body>
+
+</html>

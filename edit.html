@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Input Keren</title>
+  <style>
+    /* Background animasi gradasi bergerak */
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #a18cd1, #fbc2eb);
+      background-size: 400% 400%;
+      animation: gradientBG 12s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Card */
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      border-color: #7f00ff;
+      box-shadow: 0 0 8px #7f00ff44;
+    }
+
+    button {
+      padding: 8px 15px;
+      margin: 5px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      color: white;
+    }
+
+    .btn-simpan { background: #28a745; }
+    .btn-edit   { background: #007bff; }
+    .btn-hapus  { background: #dc3545; }
+    .btn-batal  { background: #6c757d; }
+
+    button:hover { opacity: 0.85; }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: #f8f9fa;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .actions button {
+      margin-left: 5px;
+    }
+
+    /* Halaman edit */
+    #editPage {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="mainPage">
+    <h2>Input Data</h2>
+    <input type="text" id="nama" placeholder="Nama">
+    <input type="text" id="asal" placeholder="Asal">
+    <input type="number" id="umur" placeholder="Umur">
+    <br>
+    <button class="btn-simpan" onclick="simpanData()">Simpan</button>
+
+    <h3>Daftar Data</h3>
+    <ul id="dataList"></ul>
+  </div>
+
+  <!-- Halaman Edit -->
+  <div class="container" id="editPage">
+    <h2>Edit Data</h2>
+    <input type="text" id="editNama" placeholder="Nama">
+    <input type="text" id="editAsal" placeholder="Asal">
+    <input type="number" id="editUmur" placeholder="Umur">
+    <br>
+    <button class="btn-simpan" onclick="updateData()">Simpan Perubahan</button>
+    <button class="btn-batal" onclick="batalEdit()">Batal</button>
+  </div>
+
+  <script>
+    let data = [];
+    let editIndex = null;
+
+    function simpanData() {
+      const nama = document.getElementById("nama").value.trim();
+      const asal = document.getElementById("asal").value.trim();
+      const umur = document.getElementById("umur").value.trim();
+
+      if (nama && asal && umur) {
+        data.push({ nama, asal, umur });
+        tampilkanData();
+        document.getElementById("nama").value = "";
+        document.getElementById("asal").value = "";
+        document.getElementById("umur").value = "";
+      } else {
+        alert("Isi semua input dulu ya!");
+      }
+    }
+
+    function tampilkanData() {
+      const list = document.getElementById("dataList");
+      list.innerHTML = "";
+      data.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span><b>${item.nama}</b> | ${item.asal} | ${item.umur} th</span>
+          <div class="actions">
+            <button class="btn-edit" onclick="editData(${index})">Edit</button>
+            <button class="btn-hapus" onclick="hapusData(${index})">Hapus</button>
+          </div>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    function hapusData(index) {
+      data.splice(index, 1);
+      tampilkanData();
+    }
+
+    function editData(index) {
+      editIndex = index;
+      document.getElementById("editNama").value = data[index].nama;
+      document.getElementById("editAsal").value = data[index].asal;
+      document.getElementById("editUmur").value = data[index].umur;
+
+      document.getElementById("mainPage").style.display = "none";
+      document.getElementById("editPage").style.display = "block";
+    }
+
+    function updateData() {
+      const nama = document.getElementById("editNama").value.trim();
+      const asal = document.getElementById("editAsal").value.trim();
+      const umur = document.getElementById("editUmur").value.trim();
+
+      if (nama && asal && umur) {
+        data[editIndex] = { nama, asal, umur };
+        tampilkanData();
+        balikKeMain();
+      } else {
+        alert("Isi semua input dulu ya!");
+      }
+    }
+
+    function batalEdit() {
+      balikKeMain(); // balik tanpa hapus data
+    }
+
+    function balikKeMain() {
+      document.getElementById("mainPage").style.display = "block";
+      document.getElementById("editPage").style.display = "none";
+    }
+  </script>
+</body>
+</html>
